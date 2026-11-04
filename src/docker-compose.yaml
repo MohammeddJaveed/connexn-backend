@@ -1,15 +1,38 @@
 services:
-  
   postgres:
-     image: postgres:17-alpine
-     container_name: "postgres"
-     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./postgres/init/01-create-identity-db.sql:/docker-entrypoint-initdb.d/01-create-identity-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 30s
-      start_interval: 2s
+      start_period: 10s
+
+  pgview:
+    image: catwallon/pgview
+    ports:
+      - "8080:8080"
+    environment:
+      PGVIEW_URL: ${DATABASE_URL}
+
+  identity:
+    pull_policy: build
+    build:
+      context: ./identity
+      dockerfile: Dockerfile
+    image: connexn-identity:latest
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
