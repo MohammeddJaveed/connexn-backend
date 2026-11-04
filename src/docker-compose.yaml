@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
     volumes:
-      - ./postgres/init/01-create-identity-db.sql:/docker-entrypoint-initdb.d/01-create-identity-db.sql:ro
+      - ./init-databases.sql:/docker-entrypoint-initdb.d/01-create-service-databases.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
       interval: 5s
@@ -26,9 +26,11 @@ services:
     build:
       context: ./posts
       dockerfile: Dockerfile
+    image: connexn-post:latest
     environment:
       NODE_ENV: production
       PORT: 3002
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "3002:3002"
     depends_on:
@@ -38,7 +40,6 @@ services:
       
 
   identity:
-    pull_policy: build
     build:
       context: ./identity
       dockerfile: Dockerfile
