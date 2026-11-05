@@ -14,5 +14,8 @@ router.post("/login", (req,res,next)=>
 router.get('/me', authenticateToken, (req, res) => {
   res.status(200).json({ user: req.auth });
 });
+router.post('/editprofile', authenticateToken, (req, res, next) =>
+  authController.editProfile(req, res, next)
+);
 
 export default router;

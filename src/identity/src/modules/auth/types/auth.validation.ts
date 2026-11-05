@@ -37,5 +37,21 @@ export const loginSchema = z.object({
     .max(128, "Password cannot exceed 128 characters"),
 })
 
+export const editProfileSchema = z.object({
+  firstName: z
+  .string()
+    .trim()
+    .min(2, "First name must be at least 2 characters")
+    .max(100, "First name cannot exceed 100 characters")
+    .optional(),
+  lastName: z
+    .string()
+    .trim()
+    .min(2, "Last name must be at least 2 characters")
+    .max(100, "Last name cannot exceed 100 characters")
+    .optional(),
+})
+
+export type editProfile = z.infer<typeof editProfileSchema>
 export type loginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;

@@ -6,8 +6,8 @@ import { db } from '../../index.ts';
 import { regions } from '../../db/schema/region.ts';
 import { roles } from '../../db/schema/roles.ts';
 import { users } from '../../db/schema/users.ts';
-import type { loginInput, SignupInput } from './types/auth.validation.ts';
-import type { loginResponse } from './types/auth.types.ts';
+import type { editProfile, loginInput, SignupInput } from './types/auth.validation.ts';
+import type { EditProfileResponse, loginResponse, SignupResponse } from './types/auth.types.ts';
 
 const TOKEN_LIFETIME_SECONDS = 60 * 60;
 
@@ -20,7 +20,7 @@ function getJwtSecret(): string {
 }
 
 export class AuthService {
-  async signup(data: SignupInput) {
+  async signup(data: SignupInput): Promise<SignupResponse['user']> {
     const email = data.email.trim().toLowerCase();
 
     const [existingUser] = await db
@@ -119,6 +119,24 @@ export class AuthService {
         },
       },
     };
+  }
+  async editProfile(
+    userId: string,
+    data: editProfile,
+  ): Promise<EditProfileResponse['user']> {
+    const [user] = await db
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.userId, userId))
+      .returning({
+        userId: users.userId,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+      });
+
+    if (!user) throw new Error('User not found');
+    return user;
   }
 }
 
