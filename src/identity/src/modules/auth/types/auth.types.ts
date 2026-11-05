@@ -36,3 +36,18 @@ export interface loginResponse{
     }
   }
 }
+
+export interface EditProfileRequest{
+  firstName?: string
+  lastName?: string
+}
+export interface EditProfileResponse{
+  success: boolean
+  message: string
+  user:{
+    userId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  }
+}
