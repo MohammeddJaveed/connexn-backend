@@ -1,13 +1,5 @@
-import express, { type Express, type Request, type Response } from 'express';
-import { errorHandler } from './middleware/error-handler.ts';
+import app from './app.ts';
 import { seedReferenceData } from './db/seed.ts';
-import authRoutes from "./modules/auth/auth.routes.js";
-
-const app: Express = express();
-app.use(express.json());
-
-app.use("/api/v1/auth", authRoutes)
-app.use(errorHandler);
 
 const port = Number(process.env.PORT) || 3001;
 

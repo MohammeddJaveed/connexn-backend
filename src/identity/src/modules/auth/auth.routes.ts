@@ -1,7 +1,7 @@
 
 import { Router } from "express";
 import { authController } from "./auth.controller.js";
-import authenticateToken from "./middleware/authenticateToken.ts";
+import authenticateToken from './middleware/authenticate-token.ts';
 
 const router = Router();
 
