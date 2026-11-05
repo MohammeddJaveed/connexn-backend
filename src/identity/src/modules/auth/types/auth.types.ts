@@ -15,3 +15,24 @@ export interface SignupResponse {
     lastName: string;
   };
 }
+
+export interface loginrRequest{
+  email: string
+  password: string
+}
+
+export interface loginResponse{
+  success: boolean
+  message: string
+  data :{
+    token : string
+    tokenType: string
+    expiresIn: number
+    user:{
+      userId: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    }
+  }
+}

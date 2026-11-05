@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 export const signupSchema = z.object({
@@ -26,4 +25,17 @@ export const signupSchema = z.object({
     .max(100, "Last name cannot exceed 100 characters"),
 });
 
+export const loginSchema = z.object({
+  email: z
+  .string()
+  .trim()
+  .email("Please provide a valid email address")
+  .max(255),
+  password: z
+    .string()
+    .min(12, "Password must be at least 12 characters long")
+    .max(128, "Password cannot exceed 128 characters"),
+})
+
+export type loginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;

@@ -6,10 +6,6 @@ import authRoutes from "./modules/auth/auth.routes.js";
 const app: Express = express();
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('identity service is running');
-});
-
 app.use("/api/v1/auth", authRoutes)
 app.use(errorHandler);
 
