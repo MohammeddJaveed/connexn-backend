@@ -17,5 +17,7 @@ router.get('/me', authenticateToken, (req, res) => {
 router.post('/editprofile', authenticateToken, (req, res, next) =>
   authController.editProfile(req, res, next)
 );
-
+router.delete('/deleteprofile', authenticateToken, (req, res, next) =>
+  authController.deleteProfile(req, res, next)
+);
 export default router;
