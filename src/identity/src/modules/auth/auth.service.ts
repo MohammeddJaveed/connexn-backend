@@ -138,6 +138,19 @@ export class AuthService {
     if (!user) throw new Error('User not found');
     return user;
   }
+  async deleteProfile(
+    userId: string,
+  ): Promise<void> {
+    const [deletedUser] = await db
+      .delete(users)
+      .where(eq(users.userId, userId))
+      .returning({ userId: users.userId });
+
+    if (!deletedUser) {
+      throw new Error('User not found');
+    }
+  }
 }
+
 
 export const authService = new AuthService();

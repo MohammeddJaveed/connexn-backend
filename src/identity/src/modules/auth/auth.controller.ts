@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { editProfileSchema, loginSchema, signupSchema } from "./types/auth.validation.ts";
 import { authService } from "./auth.service.ts";
 import type { EditProfileRequest, EditProfileResponse, loginResponse, loginrRequest, SignupRequest, SignupResponse } from "./types/auth.types.ts";
+import { success } from "zod";
 
 export class AuthController{
     async signup(
@@ -56,6 +57,26 @@ export class AuthController{
       });
     } catch (error) {
       next(error);
+    }
+  }
+  async deleteProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>{
+    try{
+      if(!req.auth){
+         res.status(401).json({ error: "Authentication is required" });
+        return;
+      }
+      const user = await authService.deleteProfile(req.auth.userId)
+      res.status(200).json({
+        success:true,
+        messag: "Profile deleted successfully",
+        user
+      })
+    }catch(error){
+        next(error);   
     }
   }
 }
