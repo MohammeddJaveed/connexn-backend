@@ -55,4 +55,14 @@ services:
       postgres:
         condition: service_healthy
 
-   
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: dockerfile
+    image: api-gateway:latest
+    environment:
+     NODE_ENV: production
+     PORT: 3003
+     JWT_SECRET: ${JWT_SECRET}
+    ports:
+     - "3003:3003"
