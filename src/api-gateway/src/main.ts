@@ -1,9 +1,12 @@
 import express, { type Express, type Request, type Response } from 'express';
 import { logger } from './utils/req.logger.ts';
+import { pinoHttp } from 'pino-http';
+
 
 
 const app: Express = express();
 app.use(express.json());
+app.use(pinoHttp({ logger }));
 
 app.get('/', (req: Request, res: Response) => {
   logger.info({ method: req.method, path: req.path }, 'Handling root request');
