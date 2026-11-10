@@ -24,8 +24,8 @@ services:
 
   posts:
     build:
-      context: ./posts
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: posts/dockerfile
     image: connexn-post:latest
     environment:
       NODE_ENV: production
@@ -41,8 +41,8 @@ services:
 
   identity:
     build:
-      context: ./identity
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: identity/Dockerfile
     image: connexn-identity:latest
     environment:
       NODE_ENV: production
@@ -55,4 +55,18 @@ services:
       postgres:
         condition: service_healthy
 
-   
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/dockerfile
+    image: api-gateway:latest
+    environment:
+     NODE_ENV: production
+     PORT: 3003
+     JWT_SECRET: ${JWT_SECRET}
+     IDENTITY_SERVICE_URL: http://identity:3001
+    ports:
+     - "3003:3003"
+    depends_on:
+      identity:
+        condition: service_started

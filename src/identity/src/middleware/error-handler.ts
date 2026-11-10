@@ -1,5 +1,8 @@
-import { ZodError } from 'zod';
 import type { ErrorRequestHandler } from 'express';
+import { ZodError } from 'zod';
+import { createLogger } from '@connexn/shared';
+
+const logger = createLogger('identity');
 
 export const errorHandler: ErrorRequestHandler = (
   error: unknown,
@@ -15,6 +18,6 @@ export const errorHandler: ErrorRequestHandler = (
     return;
   }
 
-  console.error('Request failed:', error);
+  logger.error({ err: error }, 'Request failed');
   res.status(500).json({ error: 'Internal server error' });
 };
