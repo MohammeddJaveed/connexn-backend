@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express';
-import jwt from 'jsonwebtoken';
+import { sessionService } from '../modules/auth/session.service.ts';
 
 interface AuthTokenClaims {
   userId: string;
@@ -14,14 +14,6 @@ declare global {
   }
 }
 
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret || secret.length < 32) {
-    throw new Error('JWT_SECRET must be set to at least 32 characters');
-  }
-  return secret;
-}
-
 const authenticateToken: RequestHandler = (req, res, next) => {
   const authorization = req.get('authorization');
   const [scheme, token, ...extraParts] = authorization?.trim().split(/\s+/) ?? [];
@@ -32,18 +24,7 @@ const authenticateToken: RequestHandler = (req, res, next) => {
   }
 
   try {
-    const payload = jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] });
-
-    if (
-      typeof payload === 'string' ||
-      typeof payload.sub !== 'string' ||
-      typeof payload.roleId !== 'string'
-    ) {
-      res.status(401).json({ error: 'The access token has invalid claims.' });
-      return;
-    }
-
-    req.auth = { userId: payload.sub, roleId: payload.roleId };
+    req.auth = sessionService.verifyAccessToken(token);
     next();
   } catch {
     res.status(401).json({ error: 'The access token is invalid or expired.' });

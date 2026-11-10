@@ -52,6 +52,11 @@ export const editProfileSchema = z.object({
     .optional(),
 })
 
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, "Refresh token is required").max(512),
+})
+
+export type refreshTokenInput = z.infer<typeof refreshTokenSchema>
 export type editProfile = z.infer<typeof editProfileSchema>
 export type loginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;

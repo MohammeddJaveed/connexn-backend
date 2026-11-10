@@ -34,6 +34,8 @@ function forwardToIdentity(identityPath: string): RequestHandler {
 
 router.post('/signup', forwardToIdentity('/api/v1/auth/signup'));
 router.post('/login', forwardToIdentity('/api/v1/auth/login'));
+router.post('/refresh', forwardToIdentity('/api/v1/auth/refresh'));
+router.post('/logout', forwardToIdentity('/api/v1/auth/logout'));
 
 router.get(
   '/me',

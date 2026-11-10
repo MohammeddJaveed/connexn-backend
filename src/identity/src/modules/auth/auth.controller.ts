@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { editProfileSchema, loginSchema, signupSchema } from "./types/auth.validation.ts";
+import { editProfileSchema, loginSchema, refreshTokenSchema, signupSchema } from "./types/auth.validation.ts";
+import { InvalidRefreshTokenError } from "./session.service.ts";
 import { authService } from "./auth.service.ts";
 import type { EditProfileRequest, EditProfileResponse, loginResponse, loginrRequest, SignupRequest, SignupResponse } from "./types/auth.types.ts";
 import { success } from "zod";
@@ -33,6 +34,36 @@ export class AuthController{
       const validatedData = loginSchema.parse(req.body);
       const result = await authService.login(validatedData);
       res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async refresh(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>{
+    try{
+      const { refreshToken } = refreshTokenSchema.parse(req.body);
+      const result = await authService.refresh(refreshToken);
+      res.status(200).json(result);
+    } catch (error) {
+      if (error instanceof InvalidRefreshTokenError) {
+        res.status(401).json({ error: error.message });
+        return;
+      }
+      next(error);
+    }
+  }
+  async logout(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>{
+    try{
+      const { refreshToken } = refreshTokenSchema.parse(req.body);
+      await authService.logout(refreshToken);
+      res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (error) {
       next(error);
     }
