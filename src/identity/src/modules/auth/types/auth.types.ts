@@ -26,8 +26,10 @@ export interface loginResponse{
   message: string
   data :{
     token : string
+    refreshToken: string
     tokenType: string
     expiresIn: number
+    refreshExpiresIn: number
     user:{
       userId: string;
       email: string;
@@ -49,5 +51,17 @@ export interface EditProfileResponse{
     email: string;
     firstName: string;
     lastName: string;
+  }
+}
+
+export interface RefreshResponse {
+  success: boolean
+  message: string
+  data: {
+    token: string
+    refreshToken: string
+    tokenType: string
+    expiresIn: number
+    refreshExpiresIn: number
   }
 }

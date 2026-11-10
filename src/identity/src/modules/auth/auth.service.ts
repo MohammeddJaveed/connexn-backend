@@ -1,25 +1,22 @@
 import argon2 from 'argon2';
 import { eq } from 'drizzle-orm';
-import jwt from 'jsonwebtoken';
 import { createLogger } from '@connexn/shared';
 
+import { HttpError } from '../../middleware/error-handler.ts';
 import { db } from '../../index.ts';
 import { regions } from '../../db/schema/region.ts';
 import { roles } from '../../db/schema/roles.ts';
 import { users } from '../../db/schema/users.ts';
 import type { editProfile, loginInput, SignupInput } from './types/auth.validation.ts';
-import type { EditProfileResponse, loginResponse, SignupResponse } from './types/auth.types.ts';
+import type {
+  EditProfileResponse,
+  loginResponse,
+  RefreshResponse,
+  SignupResponse,
+} from './types/auth.types.ts';
+import { InvalidRefreshTokenError, sessionService } from './session.service.ts';
 
-const TOKEN_LIFETIME_SECONDS = 60 * 60;
 const logger = createLogger('identity');
-
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret || secret.length < 32) {
-    throw new Error('JWT_SECRET must be set to at least 32 characters');
-  }
-  return secret;
-}
 
 export class AuthService {
   async signup(data: SignupInput): Promise<SignupResponse['user']> {
@@ -32,7 +29,7 @@ export class AuthService {
       .limit(1);
 
     if (existingUser) {
-      throw new Error('Email is already registered');
+      throw new HttpError(409, 'Email is already registered');
     }
 
     const [region] = await db
@@ -96,26 +93,24 @@ export class AuthService {
 
     if (!user || !(await argon2.verify(user.passwordHash, data.password))) {
       logger.warn({ event: 'auth.login.failed' }, 'Login credentials rejected');
-      throw new Error('Invalid email or password');
+      throw new HttpError(401, 'Invalid email or password');
     }
 
-    const token = jwt.sign(
-      { roleId: user.roleId },
-      getJwtSecret(),
-      {
-        subject: user.userId,
-        expiresIn: TOKEN_LIFETIME_SECONDS,
-      },
-    );
+    const session = await sessionService.createSession({
+      userId: user.userId,
+      roleId: user.roleId,
+    });
 
     logger.info({ event: 'auth.login.completed', userId: user.userId }, 'User logged in');
     return {
       success: true,
       message: 'Login successful',
       data: {
-        token,
-        tokenType: 'Bearer',
-        expiresIn: TOKEN_LIFETIME_SECONDS,
+        token: session.accessToken,
+        refreshToken: session.refreshToken,
+        tokenType: session.tokenType,
+        expiresIn: session.expiresIn,
+        refreshExpiresIn: session.refreshExpiresIn,
         user: {
           userId: user.userId,
           email: user.email,
@@ -125,6 +120,41 @@ export class AuthService {
       },
     };
   }
+
+  async refresh(refreshToken: string): Promise<RefreshResponse> {
+    const userId = await sessionService.consumeRefreshToken(refreshToken);
+
+    const [user] = await db
+      .select({ userId: users.userId, roleId: users.roleId })
+      .from(users)
+      .where(eq(users.userId, userId))
+      .limit(1);
+
+    if (!user) {
+      await sessionService.revokeAllSessions(userId);
+      throw new InvalidRefreshTokenError();
+    }
+
+    const session = await sessionService.createSession(user);
+    logger.info({ event: 'auth.session.rotated', userId }, 'Session rotated');
+    return {
+      success: true,
+      message: 'Token refreshed',
+      data: {
+        token: session.accessToken,
+        refreshToken: session.refreshToken,
+        tokenType: session.tokenType,
+        expiresIn: session.expiresIn,
+        refreshExpiresIn: session.refreshExpiresIn,
+      },
+    };
+  }
+
+  async logout(refreshToken: string): Promise<void> {
+    await sessionService.revokeSession(refreshToken);
+    logger.info({ event: 'auth.logout.completed' }, 'User logged out');
+  }
+
   async editProfile(
     userId: string,
     data: editProfile,
@@ -140,7 +170,7 @@ export class AuthService {
         lastName: users.lastName,
       });
 
-    if (!user) throw new Error('User not found');
+    if (!user) throw new HttpError(404, 'User not found');
     logger.info({ event: 'auth.profile.updated', userId }, 'User profile updated');
     return user;
   }
@@ -153,8 +183,9 @@ export class AuthService {
       .returning({ userId: users.userId });
 
     if (!deletedUser) {
-      throw new Error('User not found');
+      throw new HttpError(404, 'User not found');
     }
+    await sessionService.revokeAllSessions(userId);
     logger.info({ event: 'auth.profile.deleted', userId }, 'User profile deleted');
   }
 }
