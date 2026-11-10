@@ -1,12 +1,12 @@
 import express, { type Express, type Request, type Response } from 'express';
-import { logger } from './utils/logger.ts';
-import { requestLoggerMiddleware } from './middleware/request-logger.middleware.ts';
+import { createLogger, createRequestLogger } from '@connexn/shared';
 import { errorHandler } from './middleware/error-handler.middleware.ts';
 import { notFound } from './middleware/not-found.middleware.ts';
 import authRoutes from './routes/auth.routes.ts';
 
 const app: Express = express();
-app.use(requestLoggerMiddleware);
+const logger = createLogger('api-gateway');
+app.use(createRequestLogger(logger));
 app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {

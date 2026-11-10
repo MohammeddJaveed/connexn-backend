@@ -24,8 +24,8 @@ services:
 
   posts:
     build:
-      context: ./posts
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: posts/dockerfile
     image: connexn-post:latest
     environment:
       NODE_ENV: production
@@ -41,8 +41,8 @@ services:
 
   identity:
     build:
-      context: ./identity
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: identity/Dockerfile
     image: connexn-identity:latest
     environment:
       NODE_ENV: production
@@ -57,8 +57,8 @@ services:
 
   api-gateway:
     build:
-      context: ./api-gateway
-      dockerfile: dockerfile
+      context: .
+      dockerfile: api-gateway/dockerfile
     image: api-gateway:latest
     environment:
      NODE_ENV: production

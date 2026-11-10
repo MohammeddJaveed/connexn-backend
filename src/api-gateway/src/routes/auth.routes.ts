@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { Router, type RequestHandler } from 'express';
+import { createLogger } from '@connexn/shared';
 
 import authenticateToken from '../middleware/auth.middleware.ts';
-import { logger } from '../utils/logger.ts';
 
+const logger = createLogger('api-gateway');
 const router = Router();
 const identityServiceUrl = (
   process.env.IDENTITY_SERVICE_URL ?? 'http://identity:3001'

@@ -1,6 +1,9 @@
 import { ZodError } from 'zod';
 import type { ErrorRequestHandler } from 'express';
 import { UnauthorizedError } from 'express-jwt';
+import { createLogger } from '@connexn/shared';
+
+const logger = createLogger('api-gateway');
 
 export const errorHandler: ErrorRequestHandler = (
   error: unknown,
@@ -21,6 +24,6 @@ export const errorHandler: ErrorRequestHandler = (
     return;
   }
 
-  console.error('Request failed:', error);
+  logger.error({ err: error }, 'Request failed');
   res.status(500).json({ error: 'Internal server error' });
 };

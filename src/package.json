@@ -1,0 +1,24 @@
+{
+  "name": "connexn-services",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "identity",
+    "posts",
+    "api-gateway"
+  ],
+  "scripts": {
+    "build:shared": "npm run build --workspace=@connexn/shared",
+    "build": "npm run build:shared && npm run build --workspace=identity && npm run build --workspace=posts && npm run build --workspace=api-gateway"
+  },
+  "dependencies": {
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0"
+  },
+  "optionalDependencies": {
+    "@typescript/typescript-linux-arm64": "7.0.2",
+    "@typescript/typescript-linux-x64": "7.0.2"
+  }
+}

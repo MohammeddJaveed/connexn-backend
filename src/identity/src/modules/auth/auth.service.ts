@@ -1,6 +1,7 @@
 import argon2 from 'argon2';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
+import { createLogger } from '@connexn/shared';
 
 import { db } from '../../index.ts';
 import { regions } from '../../db/schema/region.ts';
@@ -10,6 +11,7 @@ import type { editProfile, loginInput, SignupInput } from './types/auth.validati
 import type { EditProfileResponse, loginResponse, SignupResponse } from './types/auth.types.ts';
 
 const TOKEN_LIFETIME_SECONDS = 60 * 60;
+const logger = createLogger('identity');
 
 function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
@@ -72,6 +74,7 @@ export class AuthService {
         lastName: users.lastName,
       });
 
+    logger.info({ event: 'auth.signup.completed', userId: newUser.userId }, 'User signed up');
     return newUser;
   }
 
@@ -92,6 +95,7 @@ export class AuthService {
       .limit(1);
 
     if (!user || !(await argon2.verify(user.passwordHash, data.password))) {
+      logger.warn({ event: 'auth.login.failed' }, 'Login credentials rejected');
       throw new Error('Invalid email or password');
     }
 
@@ -104,6 +108,7 @@ export class AuthService {
       },
     );
 
+    logger.info({ event: 'auth.login.completed', userId: user.userId }, 'User logged in');
     return {
       success: true,
       message: 'Login successful',
@@ -136,6 +141,7 @@ export class AuthService {
       });
 
     if (!user) throw new Error('User not found');
+    logger.info({ event: 'auth.profile.updated', userId }, 'User profile updated');
     return user;
   }
   async deleteProfile(
@@ -149,6 +155,7 @@ export class AuthService {
     if (!deletedUser) {
       throw new Error('User not found');
     }
+    logger.info({ event: 'auth.profile.deleted', userId }, 'User profile deleted');
   }
 }
 
