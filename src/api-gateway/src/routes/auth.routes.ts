@@ -42,7 +42,7 @@ router.get(
   ...authenticateToken,
   forwardToIdentity('/api/v1/auth/me'),
 );
-router.post(
+router.put(
   '/editprofile',
   ...authenticateToken,
   forwardToIdentity('/api/v1/auth/editprofile'),
