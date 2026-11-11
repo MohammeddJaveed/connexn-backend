@@ -5,9 +5,9 @@
   "type": "module",
   "workspaces": [
     "packages/*",
-    "identity",
-    "posts",
-    "api-gateway"
+    "apps/identity",
+    "apps/posts",
+    "apps/api-gateway"
   ],
   "scripts": {
     "build:shared": "npm run build --workspace=@connexn/shared",
