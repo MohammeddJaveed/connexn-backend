@@ -53,8 +53,16 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3005
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      SES_ENDPOINT: ${SES_ENDPOINT}
+      SES_FROM_EMAIL: ${SES_FROM_EMAIL}
     ports:
       - "3005:3005"
+    depends_on:
+      floci:
+        condition: service_started
 
   identity:
     build:
@@ -90,3 +98,12 @@ services:
     depends_on:
       identity:
         condition: service_started
+
+
+  floci:
+    image: floci/floci:latest
+    ports:
+      - "4566:4566"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Required for Lambda, ECS, RDS
+      - ./data:/app/data                         # Persistent storage   
