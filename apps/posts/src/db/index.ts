@@ -1,5 +1,5 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { postDatabaseUrl } from './db/client.ts';
+import { postDatabaseUrl } from './client.ts';
 
 const db = drizzle(postDatabaseUrl)

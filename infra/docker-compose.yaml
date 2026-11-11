@@ -34,8 +34,8 @@ services:
 
   posts:
     build:
-      context: .
-      dockerfile: posts/dockerfile
+      context: ..
+      dockerfile: apps/posts/dockerfile
     image: connexn-post:latest
     environment:
       NODE_ENV: production
@@ -48,7 +48,7 @@ services:
         condition: service_healthy     
   notification:
     build:
-      context: ./notification
+      context: ../apps/notification
       dockerfile: dockerfile
     environment:
       NODE_ENV: production
@@ -66,8 +66,8 @@ services:
 
   identity:
     build:
-      context: .
-      dockerfile: identity/Dockerfile
+      context: ..
+      dockerfile: apps/identity/Dockerfile
     image: connexn-identity:latest
     environment:
       NODE_ENV: production
@@ -85,8 +85,8 @@ services:
 
   api-gateway:
     build:
-      context: .
-      dockerfile: api-gateway/dockerfile
+      context: ..
+      dockerfile: apps/api-gateway/dockerfile
     image: api-gateway:latest
     environment:
      NODE_ENV: production

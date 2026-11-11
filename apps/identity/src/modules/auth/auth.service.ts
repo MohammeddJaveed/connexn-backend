@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { createLogger } from '@connexn/shared';
 
 import { HttpError } from '../../middleware/error-handler.ts';
-import { db } from '../../index.ts';
+import { db } from '../../db/index.ts';
 import { regions } from '../../db/schema/region.ts';
 import { roles } from '../../db/schema/roles.ts';
 import { users } from '../../db/schema/users.ts';

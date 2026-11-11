@@ -1,4 +1,4 @@
-import { db } from '../index.ts';
+import { db } from './index.ts';
 import { regions } from './schema/region.ts';
 import { roles } from './schema/roles.ts';
 
