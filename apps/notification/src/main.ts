@@ -12,7 +12,6 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Internal endpoint: other services call this, e.g. identity after registration.
 app.post('/notifications', async (req, res) => {
   const parsed = notificationSchema.safeParse(req.body);
   if (!parsed.success) {
