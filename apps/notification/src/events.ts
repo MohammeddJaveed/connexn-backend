@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// One entry per notification type. Add new events here.
+
 export const notificationSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('REGISTRATION_COMPLETED'),

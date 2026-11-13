@@ -24,6 +24,14 @@ services:
       start_period: 30s
       start_interval: 250ms
 
+  rabbitmq:
+    image: rabbitmq:3.13
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
   pgview:
     image: catwallon/pgview
     ports:
