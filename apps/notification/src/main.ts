@@ -2,6 +2,7 @@ import express from 'express';
 import { notificationSchema } from './events.ts';
 import { render } from './templates/index.ts';
 import { sendEmail } from './mailer.ts';
+import { startUserConsumer } from './consumers/user.consumer.ts';
 
 const app = express();
 const PORT = process.env.PORT || 3005;
@@ -28,4 +29,5 @@ app.post('/notifications', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Notification service listening on port ${PORT}`);
+  startUserConsumer().catch((err) => console.error('failed to start user consumer', err));
 });

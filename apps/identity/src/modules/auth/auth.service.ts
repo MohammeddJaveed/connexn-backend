@@ -1,6 +1,6 @@
 import argon2 from 'argon2';
 import { eq } from 'drizzle-orm';
-import { createLogger } from '@connexn/shared';
+import { createLogger, publishEvent, userSignedUp } from '@connexn/shared';
 
 import { HttpError } from '../../middleware/error-handler.ts';
 import { db } from '../../db/index.ts';
@@ -72,6 +72,22 @@ export class AuthService {
       });
 
     logger.info({ event: 'auth.signup.completed', userId: newUser.userId }, 'User signed up');
+
+    try {
+      await publishEvent(userSignedUp, {
+        userId: newUser.userId,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        occurredAt: new Date().toISOString(),
+      });
+    } catch (err) {
+      logger.error(
+        { event: 'auth.signup.publish_failed', userId: newUser.userId, err },
+        'Failed to publish user.signed_up event',
+      );
+    }
+
     return newUser;
   }
 

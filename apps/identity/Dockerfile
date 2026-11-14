@@ -6,6 +6,7 @@ COPY packages/shared/package.json packages/shared/package.json
 COPY apps/identity/package.json apps/identity/package.json
 COPY apps/posts/package.json apps/posts/package.json
 COPY apps/api-gateway/package.json apps/api-gateway/package.json
+COPY apps/notification/package.json apps/notification/package.json
 RUN npm ci --include-workspace-root --workspace=@connexn/shared --workspace=identity
 COPY packages/shared packages/shared
 COPY apps/identity apps/identity
