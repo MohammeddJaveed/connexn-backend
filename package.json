@@ -7,7 +7,8 @@
     "packages/*",
     "apps/identity",
     "apps/posts",
-    "apps/api-gateway"
+    "apps/api-gateway",
+    "apps/notification"
   ],
   "scripts": {
     "build:shared": "npm run build --workspace=@connexn/shared",
@@ -21,5 +22,8 @@
   "optionalDependencies": {
     "@typescript/typescript-linux-arm64": "7.0.2",
     "@typescript/typescript-linux-x64": "7.0.2"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.8"
   }
 }
