@@ -20,10 +20,13 @@ export async function connectRabbitMQ(): Promise<ConfirmChannel> {
 
   return ch;
 }
-export async function ensureExchange(name: string): Promise<ConfirmChannel> {
+
+export async function ensureFanoutExchange(
+  name: string
+): Promise<ConfirmChannel> {
   const ch = await connectRabbitMQ();
   if (!declaredExchanges.has(name)) {
-    await ch.assertExchange(name, "topic", { durable: true });
+    await ch.assertExchange(name, "fanout", { durable: true });
     declaredExchanges.add(name);
   }
   return ch;
