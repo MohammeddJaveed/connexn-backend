@@ -14,7 +14,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@connexn/shared": "1.0.0",
+    "@connexn/shared": "workspace:*",
     "dotenv": "^18.0.9",
     "drizzle-orm": "1.0.0-rc.5",
     "express": "^4.21.2",

@@ -3,27 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "packages/*",
-    "apps/identity",
-    "apps/posts",
-    "apps/api-gateway",
-    "apps/notification"
-  ],
   "scripts": {
-    "build:shared": "npm run build --workspace=@connexn/shared",
-    "build": "npm run build:shared && npm run build --workspace=identity && npm run build --workspace=posts && npm run build --workspace=api-gateway"
+    "build:shared": "turbo run build --filter=@connexn/shared",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "start": "turbo run start"
   },
-  "dependencies": {
-    "amqplib": "^2.3.1",
-    "pino": "^10.4.0",
-    "pino-http": "^11.0.0"
-  },
-  "optionalDependencies": {
-    "@typescript/typescript-linux-arm64": "7.0.2",
-    "@typescript/typescript-linux-x64": "7.0.2"
-  },
+  "packageManager": "pnpm@11.28.0",
   "devDependencies": {
-    "@types/amqplib": "^0.10.8"
+    "turbo": "^2.11.11"
   }
 }

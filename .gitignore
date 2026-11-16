@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # Local emulator state (floci)
 infra/data/
+
+# Turborepo local cache
+.turbo/
+**/.turbo/
