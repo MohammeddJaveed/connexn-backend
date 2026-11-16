@@ -4,6 +4,12 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: Run tests
+        type: boolean
+        default: true
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -23,10 +29,34 @@ jobs:
       - run: pnpm build
 
   test:
+    needs: build
+    # Always on PRs; on manual runs only when the "Run tests" box is ticked
+    if: github.event_name != 'workflow_dispatch' || inputs.run_tests
     runs-on: ubuntu-slim
     steps:
       - name: Run tests
         run: echo "Running tests..."
 
       - name: Tests passed
-        run: echo "Tests ran successfully"
+        run: echo "Test ran successfully"
+
+  codeql:
+    runs-on: ubuntu-slim
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-extended
+
+      - name: Run CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:javascript-typescript
