@@ -1,6 +1,4 @@
 import { z } from 'zod';
-
-
 export const notificationSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('REGISTRATION_COMPLETED'),

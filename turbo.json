@@ -1,0 +1,51 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "NODE_ENV",
+        "PORT",
+        "LOG_LEVEL",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "RABBITMQ_URL",
+        "JWT_SECRET",
+        "IDENTITY_SERVICE_URL",
+        "LOGIN_URL",
+        "AWS_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "SES_ENDPOINT",
+        "SES_FROM_EMAIL"
+      ]
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "NODE_ENV",
+        "PORT",
+        "LOG_LEVEL",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "RABBITMQ_URL",
+        "JWT_SECRET",
+        "IDENTITY_SERVICE_URL",
+        "LOGIN_URL",
+        "AWS_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "SES_ENDPOINT",
+        "SES_FROM_EMAIL"
+      ]
+    }
+  }
+}

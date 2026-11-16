@@ -14,7 +14,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@connexn/shared": "1.0.0",
+    "@connexn/shared": "workspace:*",
     "argon2": "^0.45.2",
     "bcryptjs": "^3.0.3",
     "dotenv": "^18.0.9",

@@ -3,3 +3,5 @@
 **/.env
 **/.git
 npm-debug.log
+**/pnpm-debug.log*
+**/.turbo
