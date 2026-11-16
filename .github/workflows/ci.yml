@@ -30,4 +30,4 @@ jobs:
         run: echo "Running tests..."
 
       - name: Tests passed
-        run: echo "Tests ran successfully"
+        run: echo "Test ran successfully"
