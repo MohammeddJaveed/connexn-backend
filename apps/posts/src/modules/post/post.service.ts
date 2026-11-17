@@ -57,8 +57,6 @@ class PostService {
     const existingPost = await this.getPostById(postId);
 
     if (existingPost.userId !== userId) {
-        console.log(existingPost.userId,"existPost")
-        console.log(userId,"requestuserId")
       const error = new Error('You are not allowed to update this post');
       Object.assign(error, { statusCode: 403 });
       throw error;
