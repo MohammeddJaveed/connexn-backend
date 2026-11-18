@@ -24,6 +24,37 @@ services:
       start_period: 30s
       start_interval: 250ms
 
+  cassandra:
+    image: cassandra:5.0
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: connexn
+      CASSANDRA_DC: datacenter1
+      MAX_HEAP_SIZE: 512M
+      HEAP_NEWSIZE: 128M
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces' > /dev/null"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  cassandra-web:
+    image: ipushc/cassandra-web
+    ports:
+      - "8083:8083"
+    environment:
+      HOST_PORT: ":8083"
+      CASSANDRA_HOST: cassandra
+      CASSANDRA_PORT: 9042
+      READ_ONLY: "false"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+
   rabbitmq:
     image: rabbitmq:3.13
     environment:
@@ -124,8 +155,14 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3006
+      CASSANDRA_CONTACT_POINTS: cassandra
+      CASSANDRA_LOCAL_DC: datacenter1
+      CASSANDRA_KEYSPACE: connexn_messages
     ports:
       - "3006:3006"
+    depends_on:
+      cassandra:
+        condition: service_healthy
 
 
   floci:
@@ -135,3 +172,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # Required for Lambda, ECS, RDS
       - ./data:/app/data                         # Persistent storage   
+
+volumes:
+  cassandra-data:
