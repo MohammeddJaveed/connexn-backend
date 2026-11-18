@@ -1,10 +1,8 @@
 import type WebSocket from 'ws';
 
-/**
- * userId → that user's open sockets (one per device/tab).
- * In-memory, so this only works with a single message-service instance;
- * replace the internals with Redis pub/sub when scaling out, keeping the same API.
- */
+//single message service assumption
+//replace the internals with Redis pub/sub when scaling out, keeping the same API.
+ 
 const sockets = new Map<string, Set<WebSocket>>();
 
 export function addConnection(userId: string, ws: WebSocket): void {
@@ -28,6 +26,7 @@ export function removeConnection(userId: string, ws: WebSocket): void {
 export function isOnline(userId: string): boolean {
   return sockets.has(userId);
 }
+
 export function deliverToUser(userId: string, payload: unknown): number {
   const userSockets = sockets.get(userId);
   if (!userSockets) return 0;
