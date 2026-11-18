@@ -158,6 +158,7 @@ services:
       CASSANDRA_CONTACT_POINTS: cassandra
       CASSANDRA_LOCAL_DC: datacenter1
       CASSANDRA_KEYSPACE: connexn_messages
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "3006:3006"
     depends_on:
