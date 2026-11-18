@@ -1,0 +1,31 @@
+FROM node:22-alpine AS build
+
+RUN corepack enable
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/shared/package.json packages/shared/package.json
+COPY apps/identity/package.json apps/identity/package.json
+COPY apps/posts/package.json apps/posts/package.json
+COPY apps/api-gateway/package.json apps/api-gateway/package.json
+COPY apps/notification/package.json apps/notification/package.json
+COPY apps/message/package.json apps/message/package.json
+RUN pnpm install --frozen-lockfile --filter "message..."
+
+COPY apps/message apps/message
+RUN pnpm --filter "message..." build
+
+FROM node:22-alpine AS runtime
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/package.json ./package.json
+COPY --from=build --chown=node:node /app/apps/message/package.json ./apps/message/package.json
+COPY --from=build --chown=node:node /app/apps/message/node_modules ./apps/message/node_modules
+COPY --from=build --chown=node:node /app/apps/message/dist ./apps/message/dist
+
+USER node
+WORKDIR /app/apps/message
+EXPOSE 3006
+CMD ["node", "dist/main.js"]

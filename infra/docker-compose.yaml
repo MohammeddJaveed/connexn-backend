@@ -116,6 +116,17 @@ services:
       identity:
         condition: service_started
 
+  message:
+    build:
+      context: ..
+      dockerfile: apps/message/dockerfile
+    image: connexn-message:latest
+    environment:
+      NODE_ENV: production
+      PORT: 3006
+    ports:
+      - "3006:3006"
+
 
   floci:
     image: floci/floci:latest
